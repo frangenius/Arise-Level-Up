@@ -1,0 +1,22 @@
+{
+  "name": "Level Up - The System",
+  "short_name": "Level Up",
+  "description": "Herramienta de desarrollo personal y gamificación RPG inspirada en Solo Leveling.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#02040a",
+  "theme_color": "#3B82F6",
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

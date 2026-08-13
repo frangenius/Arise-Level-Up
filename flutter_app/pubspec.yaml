@@ -1,0 +1,78 @@
+name: level_up
+description: "LEVEL UP - Sistema de Gamificación de Vida Personal inspirado en Solo Leveling"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Estado global con Riverpod
+  flutter_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.5
+  
+  # Base de datos local
+  sqflite: ^2.3.3+1
+  path: ^1.9.0
+  
+  # Almacenamiento rápido clave-valor (configuración y perfil)
+  hive_flutter: ^1.1.0
+  hive: ^2.2.3
+  
+  # Almacenamiento de rutas de sistema
+  path_provider: ^2.1.3
+  
+  # Fuentes
+  google_fonts: ^6.2.1
+  
+  # Notificaciones locales (recordatorios de misiones)
+  flutter_local_notifications: ^17.2.2
+  
+  # Gráficos (Radar Chart de estadísticas)
+  fl_chart: ^0.68.0
+  
+  # Animaciones mejoradas
+  lottie: ^3.1.2
+  
+  # Acceso a la galería / cámara para avatar
+  image_picker: ^1.1.1
+  
+  # Permisos en runtime
+  permission_handler: ^11.3.1
+  
+  # Formato de fechas
+  intl: ^0.19.0
+  
+  # Almacenamiento en caché de imágenes
+  cached_network_image: ^3.3.1
+  
+  # Iconos de Material personalizados
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  
+  # Generador de código para Riverpod
+  build_runner: ^2.4.11
+  riverpod_generator: ^2.4.3
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/images/
+    - assets/audio/
+  
+  fonts:
+    - family: Orbitron
+      fonts:
+        - asset: assets/fonts/Orbitron-Regular.ttf
+        - asset: assets/fonts/Orbitron-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Orbitron-Black.ttf
+          weight: 900

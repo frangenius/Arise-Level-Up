@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LEVEL UP - The System</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Meta etiquetas para Android PWA -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#02040a">
+</head>
+<body>
+    <div id="app-container">
+        <!-- Partículas de fondo -->
+        <div id="particles-container"></div>
+
+        <!-- Encabezado general -->
+        <header>
+            <div class="system-title">
+                <span>⚡</span> SYSTEM <span>[LEVEL UP]</span>
+            </div>
+            <button class="btn-settings" id="btn-header-settings">⚙️</button>
+        </header>
+
+        <!-- Área principal de pantallas -->
+        <main>
+            <!-- PANTALLA 1: SPLASH SCREEN (Autocargado) -->
+            <div class="screen active" id="screen-splash">
+                <div class="splash-logo-container">
+                    <img class="splash-logo" src="assets/logo.jpg" alt="Logo Level Up">
+                    <div class="splash-glow"></div>
+                </div>
+                <div class="splash-title">LEVEL UP</div>
+                <div class="splash-subtitle">Inicializando Sistema...</div>
+            </div>
+
+            <!-- PANTALLA: CALIBRACIÓN INICIAL -->
+            <div class="screen" id="screen-calibration">
+                <div class="glass-panel neon-border">
+                    <div class="calibration-title">Calibración del Sistema</div>
+                    
+                    <!-- Slide 1: Nombre y Avatar -->
+                    <div class="calibration-slide active" data-slide="0">
+                        <div class="form-group">
+                            <label class="form-label" for="calib-name">Identidad del Cazador (Nombre)</label>
+                            <input class="input-text" type="text" id="calib-name" placeholder="Ingresa tu nombre..." value="Franco">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Selecciona tu Avatar Inicial</label>
+                            <div class="select-card-grid">
+                                <div class="select-card selected" data-group="avatar" data-value="knight">
+                                    <div class="select-card-icon">🛡️</div>
+                                    <div class="select-card-info">
+                                        <div class="select-card-title">Caballero de las Sombras</div>
+                                        <div class="select-card-desc">Especialista en combate cuerpo a cuerpo.</div>
+                                    </div>
+                                </div>
+                                <div class="select-card" data-group="avatar" data-value="mage">
+                                    <div class="select-card-icon">🔮</div>
+                                    <div class="select-card-info">
+                                        <div class="select-card-title">Hechicero del Abismo</div>
+                                        <div class="select-card-desc">Controlador del maná y de los elementos.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn-massive btn-next-slide">Siguiente Analizar ➡️</button>
+                    </div>
+
+                    <!-- Slide 2: Evaluaciones de Vida Real -->
+                    <div class="calibration-slide" data-slide="1">
+                        <div class="form-group">
+                            <label class="form-label">¿Cuántos días entrenas actualmente?</label>
+                            <div class="select-card-grid">
+                                <div class="select-card selected" data-group="physicalDays" data-value="0">
+                                    <div class="select-card-icon">💤</div>
+                                    <div class="select-card-title">0 días (Sedentario)</div>
+                                </div>
+                                <div class="select-card" data-group="physicalDays" data-value="1-2">
+                                    <div class="select-card-icon">🏃</div>
+                                    <div class="select-card-title">1 - 2 días por semana</div>
+                                </div>
+                                <div class="select-card" data-group="physicalDays" data-value="3-5">
+                                    <div class="select-card-icon">💪</div>
+                                    <div class="select-card-title">3 - 5 días por semana</div>
+                                </div>
+                                <div class="select-card" data-group="physicalDays" data-value="todos">
+                                    <div class="select-card-icon">🔥</div>
+                                    <div class="select-card-title">Todos los días (Atleta)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn-massive btn-next-slide">Siguiente Analizar ➡️</button>
+                    </div>
+
+                    <!-- Slide 3: Estudio y Hábitos -->
+                    <div class="calibration-slide" data-slide="2">
+                        <div class="form-group">
+                            <label class="form-label">¿Cuánto tiempo dedicas a aprender / estudiar?</label>
+                            <div class="select-card-grid">
+                                <div class="select-card selected" data-group="studyTime" data-value="nada">
+                                    <div class="select-card-icon">❌</div>
+                                    <div class="select-card-title">Nada actualmente</div>
+                                </div>
+                                <div class="select-card" data-group="studyTime" data-value="30m">
+                                    <div class="select-card-icon">📖</div>
+                                    <div class="select-card-title">30 Minutos al día</div>
+                                </div>
+                                <div class="select-card" data-group="studyTime" data-value="1h">
+                                    <div class="select-card-icon">🧠</div>
+                                    <div class="select-card-title">1 Hora al día</div>
+                                </div>
+                                <div class="select-card" data-group="studyTime" data-value="2h+">
+                                    <div class="select-card-icon">🌌</div>
+                                    <div class="select-card-title">Más de 2 Horas al día</div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn-massive btn-next-slide">Siguiente Analizar ➡️</button>
+                    </div>
+
+                    <!-- Slide 4: Objetivo y Confirmación -->
+                    <div class="calibration-slide" data-slide="3">
+                        <div class="form-group">
+                            <label class="form-label">Selecciona tu objetivo principal en el Sistema</label>
+                            <div class="select-card-grid">
+                                <div class="select-card selected" data-group="goal" data-value="fisico">
+                                    <div class="select-card-icon">💪</div>
+                                    <div class="select-card-title">Mejorar Físico (Fuerza)</div>
+                                </div>
+                                <div class="select-card" data-group="goal" data-value="aprender">
+                                    <div class="select-card-icon">📚</div>
+                                    <div class="select-card-title">Aprender Más (Inteligencia)</div>
+                                </div>
+                                <div class="select-card" data-group="goal" data-value="disciplinado">
+                                    <div class="select-card-icon">⏱️</div>
+                                    <div class="select-card-title">Ser más Disciplinado (Disciplina)</div>
+                                </div>
+                                <div class="select-card" data-group="goal" data-value="bienestar">
+                                    <div class="select-card-icon">🧘</div>
+                                    <div class="select-card-title">Mejorar Bienestar (Espíritu)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn-massive" id="btn-complete-calibration">🔥 Despertar Sistema</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANTALLA 2: HOME (Inicio / Panel de Control) -->
+            <div class="screen" id="screen-home">
+                <!-- Banner Usuario -->
+                <div class="glass-panel">
+                    <div class="user-banner">
+                        <div>
+                            <div class="user-welcome" id="lbl-home-title">Cazador Rango E</div>
+                            <div class="user-name" id="header-user-name">Franco</div>
+                        </div>
+                        <div class="badge-level" id="badge-home-level">LV 1</div>
+                    </div>
+                    <!-- Barra de XP -->
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="home-xp-bar"></div>
+                    </div>
+                    <div class="xp-info">
+                        <span>Progreso de Nivel</span>
+                        <span id="lbl-home-xp">0 / 100 XP</span>
+                    </div>
+                </div>
+
+                <!-- Cuadros Meta -->
+                <div class="user-meta-grid">
+                    <div class="meta-box">
+                        <i>🔥</i>
+                        <div>
+                            <div class="meta-box-label">Racha Activa</div>
+                            <div class="meta-box-value" id="val-home-streak">0 Días</div>
+                        </div>
+                    </div>
+                    <div class="meta-box">
+                        <i>🟡</i>
+                        <div>
+                            <div class="meta-box-label">Oro Acumulado</div>
+                            <div class="meta-box-value" id="val-home-gold">0 Oro</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Misiones Recomendadas del Día -->
+                <div class="section-title">
+                    <i>📅</i> Misiones del Día
+                </div>
+                <div class="home-missions-list" id="home-missions-list">
+                    <!-- Rellenado dinámicamente -->
+                </div>
+
+                <!-- Estadísticas Resumidas -->
+                <div class="section-title">
+                    <i>📊</i> Atributos del Sistema
+                </div>
+                <div class="glass-panel" style="padding: 12px 16px;">
+                    <div class="stats-preview-grid">
+                        <div class="stat-preview-box">
+                            <div class="stat-preview-name">Fuerza</div>
+                            <div class="stat-preview-val" id="home-stat-val-strength">10</div>
+                            <div class="stat-preview-bar"><div class="stat-preview-bar-fill" id="home-stat-bar-strength"></div></div>
+                        </div>
+                        <div class="stat-preview-box">
+                            <div class="stat-preview-name">Intel.</div>
+                            <div class="stat-preview-val" id="home-stat-val-intelligence">10</div>
+                            <div class="stat-preview-bar"><div class="stat-preview-bar-fill" id="home-stat-bar-intelligence"></div></div>
+                        </div>
+                        <div class="stat-preview-box">
+                            <div class="stat-preview-name">Disc.</div>
+                            <div class="stat-preview-val" id="home-stat-val-discipline">10</div>
+                            <div class="stat-preview-bar"><div class="stat-preview-bar-fill" id="home-stat-bar-discipline"></div></div>
+                        </div>
+                        <div class="stat-preview-box">
+                            <div class="stat-preview-name">Espíritu</div>
+                            <div class="stat-preview-val" id="home-stat-val-spirit">10</div>
+                            <div class="stat-preview-bar"><div class="stat-preview-bar-fill" id="home-stat-bar-spirit"></div></div>
+                        </div>
+                        <div class="stat-preview-box">
+                            <div class="stat-preview-name">Defensa</div>
+                            <div class="stat-preview-val" id="home-stat-val-defense">10</div>
+                            <div class="stat-preview-bar"><div class="stat-preview-bar-fill" id="home-stat-bar-defense"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Acceso al Portal Semanal -->
+                <div class="glass-panel portal-widget" id="portal-weekly-widget">
+                    <!-- Dinámico -->
+                </div>
+            </div>
+
+            <!-- PANTALLA 3: MISIONES (Gestión Completa) -->
+            <div class="screen" id="screen-missions">
+                <div class="tabs-header">
+                    <button class="tab-btn active" data-tab="hoy">Hoy</button>
+                    <button class="tab-btn" data-tab="semana">Semana</button>
+                    <button class="tab-btn" data-tab="especiales">Especiales</button>
+                    <button class="tab-btn" data-tab="personalizadas">Creadas</button>
+                </div>
+
+                <div id="missions-list-container">
+                    <!-- Dinámico -->
+                </div>
+
+                <!-- Botón flotante para crear misión personalizada -->
+                <button class="fab-btn" id="btn-create-mission">+</button>
+            </div>
+
+            <!-- PANTALLA: TEMPORIZADOR DE CONCENTRACIÓN (Modo Enfoque) -->
+            <div class="screen" id="screen-timer">
+                <div class="timer-mission-title" id="timer-m-title">Concentración Absoluta</div>
+                <div class="timer-sub" id="timer-m-attr">Registrando Fuerza</div>
+
+                <div class="timer-ring-container">
+                    <svg class="timer-svg">
+                        <circle class="timer-circle-bg" cx="120" cy="120" r="100"></circle>
+                        <circle class="timer-circle-progress" id="timer-ring" cx="120" cy="120" r="100"></circle>
+                    </svg>
+                    <div class="timer-digits" id="timer-display">00:00</div>
+                </div>
+
+                <div class="timer-actions">
+                    <button class="btn-massive" style="background:var(--color-error); box-shadow:0 0 15px rgba(239, 68, 68, 0.4);" id="btn-cancel-timer">❌ Cancelar Misión</button>
+                </div>
+            </div>
+
+            <!-- PANTALLA 4: PERFIL DEL PERSONAJE -->
+            <div class="screen" id="screen-profile">
+                <!-- Tarjeta de Personaje -->
+                <div class="profile-avatar-container" id="profile-avatar-container">
+                    <div class="profile-rank-tag" id="profile-rank-tag-val">E</div>
+                    <img class="profile-avatar-image" id="profile-avatar-img" src="assets/logo.jpg" alt="Avatar">
+                    <div class="profile-avatar-overlay"></div>
+                    <div class="profile-avatar-info">
+                        <div class="profile-title-lbl" id="lbl-profile-title">Hunter Novato</div>
+                        <div class="profile-name-lbl" id="lbl-profile-name">Franco</div>
+                        <div class="profile-class-lbl" id="lbl-profile-class">Guerrero ⚔️</div>
+                    </div>
+                </div>
+
+                <!-- Atributos Detallados -->
+                <div class="glass-panel" style="margin-top:-25px; position:relative; z-index:2;">
+                    <div class="profile-stats-grid">
+                        <div class="profile-stat-item">
+                            <div class="profile-stat-header"><span>💪 Fuerza</span></div>
+                            <div class="profile-stat-value" id="profile-val-strength">10</div>
+                        </div>
+                        <div class="profile-stat-item">
+                            <div class="profile-stat-header"><span>🧠 Inteligencia</span></div>
+                            <div class="profile-stat-value" id="profile-val-intelligence">10</div>
+                        </div>
+                        <div class="profile-stat-item">
+                            <div class="profile-stat-header"><span>⏱️ Disciplina</span></div>
+                            <div class="profile-stat-value" id="profile-val-discipline">10</div>
+                        </div>
+                        <div class="profile-stat-item">
+                            <div class="profile-stat-header"><span>🧘 Espíritu</span></div>
+                            <div class="profile-stat-value" id="profile-val-spirit">10</div>
+                        </div>
+                        <div class="profile-stat-item">
+                            <div class="profile-stat-header"><span>🛡️ Defensa</span></div>
+                            <div class="profile-stat-value" id="profile-val-defense">10</div>
+                        </div>
+                        <div class="profile-stat-item" style="border: var(--border-glow); background: rgba(59, 130, 246, 0.05)">
+                            <div class="profile-stat-header" style="color:var(--color-primary)"><span style="font-weight:700">⚔️ Poder (AP)</span></div>
+                            <div class="profile-stat-value" style="color:var(--color-primary)" id="profile-val-ap">20</div>
+                        </div>
+                    </div>
+                    
+                    <div style="display:flex; justify-content:space-between; font-size:14px; color:rgba(255,255,255,0.5); margin-bottom:15px; font-family:var(--font-title);">
+                        <span id="lbl-profile-level">Nivel: 1</span>
+                        <span id="lbl-profile-xp-raw">XP: 0 / 100</span>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                        <button class="btn-secondary" id="btn-change-class">Cambiar Clase</button>
+                        <button class="btn-secondary" onclick="sounds.click(); renderTabProfileStats();">Estadísticas ➡️</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANTALLA: ESTADÍSTICAS RADAR E HISTORIAL -->
+            <div class="screen" id="screen-stats">
+                <div class="section-title">
+                    <i>📊</i> Gráfico de Atributos
+                </div>
+                <div class="glass-panel">
+                    <div class="radar-chart-container">
+                        <canvas id="radar-canvas"></canvas>
+                    </div>
+                </div>
+
+                <div class="section-title">
+                    <i>⚔️</i> Cálculo de Combate
+                </div>
+                <div class="glass-panel">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                        <span>Poder de Ataque Total (AP):</span>
+                        <strong style="color:var(--color-primary)" id="stats-val-ap">20</strong>
+                    </div>
+                    <div class="stats-extended-list">
+                        <div class="stat-extended-card">
+                            <div class="stat-extended-header">
+                                <div class="stat-extended-info">
+                                    <div class="stat-extended-icon">💪</div>
+                                    <div class="stat-extended-name">Fuerza</div>
+                                </div>
+                                <div class="stat-extended-values">
+                                    <div class="stat-extended-val-total" id="stats-val-total-strength">10</div>
+                                    <div class="stat-extended-val-breakdown" id="stats-val-breakdown-strength">Base: 10</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-extended-card">
+                            <div class="stat-extended-header">
+                                <div class="stat-extended-info">
+                                    <div class="stat-extended-icon">🧠</div>
+                                    <div class="stat-extended-name">Inteligencia</div>
+                                </div>
+                                <div class="stat-extended-values">
+                                    <div class="stat-extended-val-total" id="stats-val-total-intelligence">10</div>
+                                    <div class="stat-extended-val-breakdown" id="stats-val-breakdown-intelligence">Base: 10</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-extended-card">
+                            <div class="stat-extended-header">
+                                <div class="stat-extended-info">
+                                    <div class="stat-extended-icon">⏱️</div>
+                                    <div class="stat-extended-name">Disciplina</div>
+                                </div>
+                                <div class="stat-extended-values">
+                                    <div class="stat-extended-val-total" id="stats-val-total-discipline">10</div>
+                                    <div class="stat-extended-val-breakdown" id="stats-val-breakdown-discipline">Base: 10</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-extended-card">
+                            <div class="stat-extended-header">
+                                <div class="stat-extended-info">
+                                    <div class="stat-extended-icon">🧘</div>
+                                    <div class="stat-extended-name">Espíritu</div>
+                                </div>
+                                <div class="stat-extended-values">
+                                    <div class="stat-extended-val-total" id="stats-val-total-spirit">10</div>
+                                    <div class="stat-extended-val-breakdown" id="stats-val-breakdown-spirit">Base: 10</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-extended-card">
+                            <div class="stat-extended-header">
+                                <div class="stat-extended-info">
+                                    <div class="stat-extended-icon">🛡️</div>
+                                    <div class="stat-extended-name">Defensa</div>
+                                </div>
+                                <div class="stat-extended-values">
+                                    <div class="stat-extended-val-total" id="stats-val-total-defense">10</div>
+                                    <div class="stat-extended-val-breakdown" id="stats-val-breakdown-defense">Base: 10</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title">
+                    <i>📜</i> Historial de Entrenamiento (Hoy)
+                </div>
+                <div class="glass-panel">
+                    <div class="stat-history-list" id="stats-history-list">
+                        <!-- Dinámico -->
+                    </div>
+                </div>
+                <button class="btn-massive" onclick="sounds.click(); showScreen('screen-profile'); renderTabProfile();">⬅️ Volver al Perfil</button>
+            </div>
+
+            <!-- PANTALLA 5: INVENTARIO -->
+            <div class="screen" id="screen-inventory">
+                <div class="inventory-tabs">
+                    <button class="inventory-tab-btn active" data-tab="arma">🗡️ Armas</button>
+                    <button class="inventory-tab-btn" data-tab="armadura">👕 Armaduras</button>
+                    <button class="inventory-tab-btn" data-tab="consumible">🧪 Consumibles</button>
+                    <button class="inventory-tab-btn" data-tab="material">🎒 Materiales</button>
+                    <button class="inventory-tab-btn" data-tab="receta">📜 Recetas</button>
+                </div>
+
+                <div class="inventory-grid" id="inventory-grid">
+                    <!-- Dinámico -->
+                </div>
+            </div>
+
+            <!-- PANTALLA 6: RPG (Portales de Combate) -->
+            <div class="screen" id="screen-rpg">
+                <div class="rpg-header">
+                    <div class="section-title" style="margin: 0; border: none;">
+                        <i>🚪</i> Portales de la Semana
+                    </div>
+                    <div class="rpg-energy" id="rpg-energy-display">
+                        ⚡ Energía: 5 / 5
+                    </div>
+                </div>
+                <div class="portal-list" id="portals-list-container">
+                    <!-- Dinámico -->
+                </div>
+                
+                <div style="display:flex; justify-content:center; gap:10px;">
+                    <button class="btn-secondary" style="width:100%" onclick="sounds.click(); renderTabShop();">🛒 Visitar Tienda / Forja</button>
+                </div>
+            </div>
+
+            <!-- PANTALLA 7: TIENDA Y FORJA -->
+            <div class="screen" id="screen-shop">
+                <div class="shop-tabs">
+                    <button class="tab-btn active shop-tab-btn" data-tab="comprar">Comprar</button>
+                    <button class="tab-btn shop-tab-btn" data-tab="forjar">🔨 Forjar (Crafting)</button>
+                </div>
+
+                <div style="font-family:var(--font-title); font-weight:700; color:#facc15; margin-bottom:12px; text-align:right; font-size:16px;" id="shop-gold-balance">
+                    Tus Fondos: 200 Oro
+                </div>
+
+                <div class="shop-grid" id="shop-content-grid">
+                    <!-- Dinámico -->
+                </div>
+                
+                <button class="btn-massive" style="margin-top:20px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); box-shadow:none;" onclick="sounds.click(); showScreen('screen-rpg'); renderTabRPG();">⬅️ Volver a Portales</button>
+            </div>
+        </main>
+
+        <!-- Barra inferior permanente de navegación -->
+        <nav>
+            <button class="nav-item active" data-tab="home">
+                <span class="nav-icon">🏠</span>
+                <span>Inicio</span>
+            </button>
+            <button class="nav-item" data-tab="missions">
+                <span class="nav-icon">📜</span>
+                <span>Misiones</span>
+            </button>
+            <button class="nav-item" data-tab="rpg">
+                <span class="nav-icon">⚔️</span>
+                <span>RPG</span>
+            </button>
+            <button class="nav-item" data-tab="inventory">
+                <span class="nav-icon">🎒</span>
+                <span>Inventario</span>
+            </button>
+            <button class="nav-item" data-tab="profile">
+                <span class="nav-icon">👤</span>
+                <span>Perfil</span>
+            </button>
+        </nav>
+
+        <!-- COMBATE ACTIVO OVERLAY (Combate por turnos a pantalla completa) -->
+        <div id="battle-overlay">
+            <!-- Sección Enemigo -->
+            <div class="battle-enemy-section">
+                <div class="enemy-name" id="enemy-name-ui">Goblin</div>
+                <div class="enemy-level" id="enemy-lvl-ui">LV 4</div>
+                <div class="hp-bar-outer">
+                    <div class="hp-bar-inner" id="enemy-hp-bar"></div>
+                </div>
+                <div class="hp-text" id="enemy-hp-txt">60 / 60 HP</div>
+            </div>
+
+            <!-- Arena Combate -->
+            <div class="battle-arena">
+                <div class="battle-graphics">
+                    <div class="battle-character" id="battle-char-gfx">🤺</div>
+                    <div class="battle-enemy" id="battle-enemy-gfx">👹</div>
+                </div>
+                <div class="battle-log" id="battle-log-txt">
+                    <!-- Mensajes de combate -->
+                </div>
+            </div>
+
+            <!-- Sección Jugador -->
+            <div class="battle-player-section">
+                <div style="display:flex; justify-content:space-between; font-family:var(--font-title); font-size:14px;">
+                    <span>Tus Puntos de Vida (HP):</span>
+                </div>
+                <div class="hp-bar-outer" style="margin: 6px 0;">
+                    <div class="hp-bar-inner" style="background:var(--color-success)" id="player-hp-bar"></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-family:var(--font-title); font-size:12px; color:rgba(255,255,255,0.4)">
+                    <span id="player-hp-txt">100 / 100 HP</span>
+                    <span>AP Activo</span>
+                </div>
+
+                <!-- Botones Grandes de Acción -->
+                <div class="battle-actions-grid">
+                    <button class="btn-battle btn-battle-attack" id="btn-action-attack">
+                        <i>⚔️</i>
+                        <span>Atacar</span>
+                    </button>
+                    <button class="btn-battle btn-battle-defend" id="btn-action-defend">
+                        <i>🛡️</i>
+                        <span>Defender</span>
+                    </button>
+                    <button class="btn-battle btn-battle-item" id="btn-action-item">
+                        <i>🎒</i>
+                        <span>Objeto</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================================================
+           MODALES (Popups - Solo uno a la vez)
+           ========================================================================== -->
+        
+        <!-- Modal 1: Configuración -->
+        <div class="modal-overlay" id="settings-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Configuración del Sistema</div>
+                    <button class="modal-close" id="btn-close-settings">×</button>
+                </div>
+                <div class="config-group">
+                    <div class="config-item">
+                        <div class="config-item-info">
+                            <h4>Modo Escalado Automático</h4>
+                            <p>La dificultad de las misiones aumenta con tu nivel.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="toggle-scaling" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="config-item">
+                        <div class="config-item-info">
+                            <h4>Permitir Pausa en Concentración</h4>
+                            <p>Habilita pausar el temporizador de misiones (opcional).</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="toggle-pause">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="config-item" style="border:none;">
+                        <div class="config-item-info">
+                            <h4>Backup Local del Progreso</h4>
+                            <p>Exporta tu historial y estadísticas de IndexedDB.</p>
+                        </div>
+                        <button class="btn-secondary" style="padding:6px 12px; font-size:12px;" onclick="alert('Funcionalidad de exportación de base de datos preparada para sincronización online futura.');">Exportar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal 2: Crear Misión -->
+        <div class="modal-overlay" id="create-mission-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Nueva Misión Personalizada</div>
+                    <button class="modal-close" id="btn-close-create">×</button>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="mission-name">Nombre de la Misión</label>
+                    <input class="input-text" type="text" id="mission-name" placeholder="Ej: Leer 30 minutos, Flexiones...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="mission-desc">Descripción / Objetivo</label>
+                    <input class="input-text" type="text" id="mission-desc" placeholder="¿Qué harás exactamente?">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="mission-duration">Duración (Minutos)</label>
+                    <select class="input-text" id="mission-duration" style="background:#091024;">
+                        <option value="5">5 Minutos (Muy Rápido)</option>
+                        <option value="15" selected>15 Minutos (Estándar)</option>
+                        <option value="30">30 Minutos (Intermedio)</option>
+                        <option value="45">45 Minutos (Avanzado)</option>
+                        <option value="60">60 Minutos (Extremo)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="mission-attribute">Atributo Asociado</label>
+                    <select class="input-text" id="mission-attribute" style="background:#091024;">
+                        <option value="strength">💪 Fuerza (Actividad Física)</option>
+                        <option value="intelligence">🧠 Inteligencia (Lectura, Estudio, Código)</option>
+                        <option value="discipline">⏱️ Disciplina (Rachas, Hábitos, Orden)</option>
+                        <option value="spirit">🧘 Espíritu (Meditación, Journaling, Yoga)</option>
+                        <option value="defense">🛡️ Defensa (Hidratación, Sueño, Salud)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="mission-difficulty">Nivel de Dificultad</label>
+                    <select class="input-text" id="mission-difficulty" style="background:#091024;">
+                        <option value="muy_facil">Muy Fácil</option>
+                        <option value="facil">Fácil</option>
+                        <option value="normal" selected>Normal</option>
+                        <option value="dificil">Difícil</option>
+                        <option value="extrema">Extrema (Solo Cazadores de alto nivel)</option>
+                    </select>
+                </div>
+                <button class="btn-massive" id="btn-save-mission">💾 Registrar Misión</button>
+            </div>
+        </div>
+
+        <!-- Modal 3: Detalles de Misión -->
+        <div class="modal-overlay" id="mission-detail-modal">
+            <div class="modal-content" style="text-align:center;">
+                <div class="modal-header">
+                    <div class="modal-title">Detalles de Misión</div>
+                    <button class="modal-close" id="btn-close-detail">×</button>
+                </div>
+                <h3 class="timer-mission-title" style="font-size:22px;" id="lbl-detail-title">Misión</h3>
+                <p style="color:rgba(255,255,255,0.7); margin-bottom:15px;" id="lbl-detail-desc">Descripción detallada.</p>
+                
+                <div class="glass-panel" style="text-align:left; background:rgba(255,255,255,0.02); margin-bottom:20px;">
+                    <div style="margin-bottom:8px;" id="lbl-detail-attribute">Atributo aumentado: Fuerza</div>
+                    <div style="margin-bottom:8px;" id="lbl-detail-duration">Tiempo: 15 Minutos</div>
+                    <div style="margin-bottom:8px; display:flex; justify-content:space-between;">
+                        <span>Recompensa XP:</span>
+                        <strong style="color:var(--color-xp);" id="lbl-detail-xp">+30 XP</strong>
+                    </div>
+                    <div style="display:flex; justify-content:space-between;">
+                        <span>Recompensa Oro:</span>
+                        <strong style="color:#facc15;" id="lbl-detail-gold">+20 Oro</strong>
+                    </div>
+                </div>
+
+                <div style="display:flex; justify-content:center; gap:8px; margin-bottom:15px;">
+                    <span>Dificultad Declarada:</span>
+                    <span class="difficulty-badge" id="lbl-detail-difficulty">Normal</span>
+                </div>
+
+                <button class="btn-massive" id="btn-start-mission">🔥 INICIAR MISIÓN</button>
+            </div>
+        </div>
+
+        <!-- Modal 4: Selección de Objeto en Combate -->
+        <div class="modal-overlay" id="battle-items-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Usar Consumible</div>
+                    <button class="modal-close" id="btn-close-battle-items">×</button>
+                </div>
+                <div class="select-card-grid" id="battle-items-list">
+                    <!-- Dinámico -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal 5: Detalles de Objeto en Inventario -->
+        <div class="modal-overlay" id="item-detail-modal">
+            <div class="modal-content" style="text-align:center;">
+                <div class="modal-header">
+                    <div class="modal-title">Ficha de Objeto</div>
+                    <button class="modal-close" id="btn-close-item-detail">×</button>
+                </div>
+                <h3 class="timer-mission-title" style="font-size:22px;" id="lbl-item-name">Espada</h3>
+                <p style="color:rgba(255,255,255,0.6); margin-bottom:15px;" id="lbl-item-desc">Lore u descripción.</p>
+                <div class="glass-panel" style="text-align:left; background:rgba(255,255,255,0.02); font-family:var(--font-title); font-size:14px; margin-bottom:20px;">
+                    <div id="lbl-item-rarity" style="margin-bottom:8px;">Rareza: Rara</div>
+                    <div id="item-stats-box">
+                        <!-- Stats dinámicos -->
+                    </div>
+                </div>
+                <button class="btn-massive" id="btn-equip-item">Equipar</button>
+            </div>
+        </div>
+
+        <!-- Modal 6: Selección de Clase en Perfil -->
+        <div class="modal-overlay" id="class-select-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Selecciona tu Camino</div>
+                    <button class="modal-close" id="btn-close-class-select">×</button>
+                </div>
+                <div class="select-card-grid" id="class-list-container">
+                    <!-- Dinámico -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts de la app -->
+    <script src="db.js"></script>
+    <script src="skills.js"></script>
+    <script src="missions.js"></script>
+    <script src="rpg.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
