@@ -671,7 +671,52 @@
                     <span class="difficulty-badge" id="lbl-detail-difficulty">Normal</span>
                 </div>
 
-                <button class="btn-massive" id="btn-start-mission">🔥 INICIAR MISIÓN</button>
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <button class="btn-massive" id="btn-start-mission">🔥 INICIAR MISIÓN</button>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-secondary" id="btn-edit-mission" style="flex:1; padding:10px; border-color:var(--color-primary);">✏️ Editar</button>
+                        <button class="btn-secondary" id="btn-delete-mission" style="flex:1; padding:10px; border-color:#ef4444; color:#ef4444;">🗑️ Eliminar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Edit Mission -->
+        <div class="modal-overlay" id="edit-mission-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">Editar Misión</div>
+                    <button class="modal-close" id="btn-close-edit-mission">×</button>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="edit-mission-name">Nombre de la Misión</label>
+                    <input class="input-text" type="text" id="edit-mission-name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="edit-mission-desc">Descripción</label>
+                    <input class="input-text" type="text" id="edit-mission-desc">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="edit-mission-duration">Duración (Minutos)</label>
+                    <select class="input-text" id="edit-mission-duration" style="background:#091024;">
+                        <option value="5">5 Minutos</option>
+                        <option value="15">15 Minutos</option>
+                        <option value="30">30 Minutos</option>
+                        <option value="45">45 Minutos</option>
+                        <option value="60">60 Minutos</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="edit-mission-difficulty">Dificultad</label>
+                    <select class="input-text" id="edit-mission-difficulty" style="background:#091024;">
+                        <option value="muy_facil">Muy Fácil</option>
+                        <option value="facil">Fácil</option>
+                        <option value="normal">Normal</option>
+                        <option value="dificil">Difícil</option>
+                        <option value="extrema">Extrema</option>
+                    </select>
+                </div>
+                <button class="btn-massive" id="btn-save-edit-mission">💾 Guardar Cambios</button>
             </div>
         </div>
 

@@ -150,7 +150,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             }
         })();
         const timeoutPromise = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Timeout al abrir la base de datos local')), 1500)
+            setTimeout(() => reject(new Error('Timeout al abrir la base de datos local')), 8000)
         );
         await Promise.race([dbInitPromise, timeoutPromise]);
     } catch (e) {
@@ -612,6 +612,65 @@ function openMissionDetails(mission) {
     document.getElementById('btn-close-detail').onclick = () => {
         sounds.click();
         closeModal('mission-detail-modal');
+    };
+
+    // Botón Eliminar Misión
+    document.getElementById('btn-delete-mission').onclick = async () => {
+        sounds.click();
+        if (confirm(`¿Seguro que deseas eliminar la misión "${mission.name}"?`)) {
+            if (mission.id) {
+                await window.dbMissions.delete(mission.id);
+            }
+            closeModal('mission-detail-modal');
+            renderTabMissions();
+            if (activeMissionsTab === 'hoy') renderTabHome();
+        }
+    };
+
+    // Botón Editar Misión
+    document.getElementById('btn-edit-mission').onclick = () => {
+        sounds.click();
+        closeModal('mission-detail-modal');
+        openEditMissionModal(mission);
+    };
+}
+
+function openEditMissionModal(mission) {
+    const overlay = document.getElementById('edit-mission-modal');
+    overlay.classList.add('active');
+
+    document.getElementById('edit-mission-name').value = mission.name;
+    document.getElementById('edit-mission-desc').value = mission.desc;
+    document.getElementById('edit-mission-duration').value = mission.duration;
+    document.getElementById('edit-mission-difficulty').value = mission.difficulty;
+
+    document.getElementById('btn-save-edit-mission').onclick = async () => {
+        sounds.click();
+        mission.name = document.getElementById('edit-mission-name').value.trim() || mission.name;
+        mission.desc = document.getElementById('edit-mission-desc').value.trim() || mission.desc;
+        mission.duration = parseInt(document.getElementById('edit-mission-duration').value) || mission.duration;
+        mission.difficulty = document.getElementById('edit-mission-difficulty').value;
+
+        // Recalcular XP / Oro según dificultad
+        let baseXP = 30;
+        let baseGold = 20;
+        if (mission.difficulty === 'muy_facil') { baseXP = 15; baseGold = 10; }
+        else if (mission.difficulty === 'facil') { baseXP = 30; baseGold = 20; }
+        else if (mission.difficulty === 'normal') { baseXP = 60; baseGold = 45; }
+        else if (mission.difficulty === 'dificil') { baseXP = 100; baseGold = 80; }
+        else if (mission.difficulty === 'extrema') { baseXP = 160; baseGold = 130; }
+
+        mission.reward_xp = baseXP;
+        mission.reward_gold = baseGold;
+
+        await window.dbMissions.save(mission);
+        closeModal('edit-mission-modal');
+        renderTabMissions();
+    };
+
+    document.getElementById('btn-close-edit-mission').onclick = () => {
+        sounds.click();
+        closeModal('edit-mission-modal');
     };
 }
 

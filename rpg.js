@@ -163,6 +163,7 @@ class BattleEngine {
         }
 
         this.enemyHp = Math.max(0, this.enemyHp - damage);
+        this.onUpdate(this);
         
         if (this.enemyHp <= 0) {
             this.victory();
@@ -186,6 +187,7 @@ class BattleEngine {
             this.onLog(`✨ Habilidad de Guerrero: Recuperas ${healVal} HP al defender.`);
         }
 
+        this.onUpdate(this);
         this.endPlayerTurn();
     }
 
@@ -217,6 +219,8 @@ class BattleEngine {
 
         // Consumir objeto
         consumeCallback(itemInstance);
+
+        this.onUpdate(this);
 
         if (this.enemyHp <= 0) {
             this.victory();
