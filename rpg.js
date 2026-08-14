@@ -93,11 +93,13 @@ const ITEMS_DATABASE = {
 
 // Lógica de Combate por Turnos
 class BattleEngine {
-    constructor(playerStats, playerAP, equippedWeapon, playerClass, enemyId, onLog, onUpdate) {
-        this.playerMaxHp = 100 + playerStats.spirit.current * 5 + (playerStats.defense.current * 2);
+    constructor(playerData, playerAP, equippedWeapon, playerClass, enemyId, onLog, onUpdate) {
+        // playerData es el userState completo; las estadísticas están en playerData.stats
+        const pStats = playerData.stats || playerData;
+        this.playerMaxHp = 100 + (pStats.spirit ? pStats.spirit.current : 10) * 5 + ((pStats.defense ? pStats.defense.current : 10) * 2);
         this.playerHp = this.playerMaxHp;
         this.playerAP = playerAP;
-        this.playerDefense = playerStats.defense.current;
+        this.playerDefense = pStats.defense ? pStats.defense.current : 10;
         this.playerClass = playerClass;
         this.equippedWeapon = equippedWeapon;
 
@@ -107,7 +109,7 @@ class BattleEngine {
         this.enemyIcon = baseEnemy.icon;
         
         // Escalamiento del enemigo según nivel de jugador
-        const playerLvl = playerStats.level || 1;
+        const playerLvl = playerData.level || 1;
         const enemyScale = 1 + (playerLvl - 1) * 0.04; // +4% de poder por nivel de jugador
         this.enemyMaxHp = Math.round(baseEnemy.hp * enemyScale);
         this.enemyHp = this.enemyMaxHp;

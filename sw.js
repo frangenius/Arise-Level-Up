@@ -1,5 +1,5 @@
 // sw.js - Service Worker para soporte Offline en LEVEL UP
-const CACHE_NAME = 'levelup-cache-v4';
+const CACHE_NAME = 'levelup-cache-v5';
 const ASSETS = [
     './',
     './index.html',
