@@ -1265,18 +1265,29 @@ function getEquippedWeaponSync() {
 
 function updateBattleUI(engine) {
     // Enemigo
-    document.getElementById('enemy-icon-ui').innerText = engine.enemyIcon;
-    document.getElementById('enemy-name-ui').innerText = engine.enemyName;
-    document.getElementById('enemy-lvl-ui').innerText = `LV ${engine.enemyLevel}`;
+    const enemyIconEl = document.getElementById('battle-enemy-gfx') || document.getElementById('enemy-icon-ui');
+    if (enemyIconEl) enemyIconEl.innerText = engine.enemyIcon;
+
+    const enemyNameEl = document.getElementById('enemy-name-ui');
+    if (enemyNameEl) enemyNameEl.innerText = engine.enemyName;
+
+    const enemyLvlEl = document.getElementById('enemy-lvl-ui');
+    if (enemyLvlEl) enemyLvlEl.innerText = `LV ${engine.enemyLevel}`;
     
-    const enemyHpPercent = (engine.enemyHp / engine.enemyMaxHp) * 100;
-    document.getElementById('enemy-hp-bar').style.width = `${enemyHpPercent}%`;
-    document.getElementById('enemy-hp-txt').innerText = `${Math.round(engine.enemyHp)} / ${engine.enemyMaxHp} HP`;
+    const enemyHpPercent = Math.max(0, (engine.enemyHp / engine.enemyMaxHp) * 100);
+    const enemyHpBar = document.getElementById('enemy-hp-bar');
+    if (enemyHpBar) enemyHpBar.style.width = `${enemyHpPercent}%`;
+
+    const enemyHpTxt = document.getElementById('enemy-hp-txt');
+    if (enemyHpTxt) enemyHpTxt.innerText = `${Math.max(0, Math.round(engine.enemyHp))} / ${engine.enemyMaxHp} HP`;
 
     // Jugador
-    const playerHpPercent = (engine.playerHp / engine.playerMaxHp) * 100;
-    document.getElementById('player-hp-bar').style.width = `${playerHpPercent}%`;
-    document.getElementById('player-hp-txt').innerText = `${Math.round(engine.playerHp)} / ${Math.round(engine.playerMaxHp)} HP`;
+    const playerHpPercent = Math.max(0, (engine.playerHp / engine.playerMaxHp) * 100);
+    const playerHpBar = document.getElementById('player-hp-bar');
+    if (playerHpBar) playerHpBar.style.width = `${playerHpPercent}%`;
+
+    const playerHpTxt = document.getElementById('player-hp-txt');
+    if (playerHpTxt) playerHpTxt.innerText = `${Math.max(0, Math.round(engine.playerHp))} / ${Math.round(engine.playerMaxHp)} HP`;
 
     // Si terminó el combate
     if (engine.isOver) {
