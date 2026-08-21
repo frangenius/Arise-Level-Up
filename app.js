@@ -611,7 +611,7 @@ async function loadMissionsList() {
 }
 
 // --------------------------------------------------------------------------
-// 7.1 GESTIÓN DE MINI TAREAS (Sin Timer)
+// 7.1 GESTIÓN DE MISIÓN ESPECIAL DIARIA (No generada por el usuario - 1 por día)
 // --------------------------------------------------------------------------
 async function renderMiniTasks(containerId, isHome = false) {
     const container = document.getElementById(containerId);
@@ -622,7 +622,7 @@ async function renderMiniTasks(containerId, isHome = false) {
     const todayStr = new Date().toISOString().split('T')[0];
     let miniTasks = allMissions.filter(m => m.type === 'mini' && m.date_created === todayStr);
 
-    // Si aún no hay mini tareas generadas para hoy, crear 1 inicial
+    // Si aún no hay misión especial generada para hoy, crear exactamente 1
     if (miniTasks.length === 0) {
         const initialMini = window.generateMiniTasks(1);
         for (const mt of initialMini) {
@@ -636,8 +636,8 @@ async function renderMiniTasks(containerId, isHome = false) {
     section.className = 'mini-tasks-section';
     section.innerHTML = `
         <div class="mini-tasks-header">
-            <span>⚡ Eventos Especiales / Mini Tareas</span>
-            <span style="font-size:11px; font-weight:normal; color:rgba(255,255,255,0.4);">Sin timer</span>
+            <span>⚡ Misión Especial Diaria (1 por día)</span>
+            <span style="font-size:11px; font-weight:normal; color:rgba(255,255,255,0.4);">Evento del Sistema</span>
         </div>
         <div class="mini-tasks-list"></div>
     `;
@@ -683,7 +683,7 @@ async function renderMiniTasks(containerId, isHome = false) {
 
                 await window.dbHistory.add({
                     date: todayStr,
-                    text: `+1 ${attr.charAt(0).toUpperCase() + attr.slice(1)} (Mini Tarea)`,
+                    text: `+1 ${attr.charAt(0).toUpperCase() + attr.slice(1)} (Misión Especial)`,
                     attribute: attr,
                     value: 1,
                     timestamp: Date.now()
@@ -710,7 +710,6 @@ async function renderMiniTasks(containerId, isHome = false) {
                 await saveUserProfile();
                 loadMissionsList();
                 renderTabHome();
-                await checkBonusMiniTasksUnlock();
             });
         }
 
@@ -721,25 +720,7 @@ async function renderMiniTasks(containerId, isHome = false) {
 }
 
 async function checkBonusMiniTasksUnlock() {
-    const todayStr = new Date().toISOString().split('T')[0];
-    const allMissions = await window.dbMissions.getAll();
-    const todayDaily = allMissions.filter(m => m.type === 'diaria' && m.date_created === todayStr);
-
-    if (todayDaily.length >= 4 && todayDaily.every(m => m.completed)) {
-        // Verificar si ya se dieron los bonus de hoy
-        const todayMini = allMissions.filter(m => m.type === 'mini' && m.date_created === todayStr);
-        if (todayMini.length < 3) {
-            const existingNames = todayMini.map(m => m.name);
-            const bonusTasks = window.generateMiniTasks(2, existingNames);
-            for (const bt of bonusTasks) {
-                await window.dbMissions.save(bt);
-            }
-            sounds.activation();
-            alert('🎉 ¡EXTRAORDINARIO! Has completado todas las misiones de tu rutina diaria. El Sistema ha desbloqueado 2 Mini Tareas Especiales bonus.');
-            loadMissionsList();
-            renderTabHome();
-        }
-    }
+    // Limitado estrictamente a 1 por día como solicitó el usuario
 }
 
 // --------------------------------------------------------------------------

@@ -36,21 +36,14 @@ const MISSION_PRESETS = {
     ]
 };
 
-// Mini Tareas sin temporizador (Eventos especiales y rápidos del Sistema)
+// Misiones Especiales / Mini Tareas (Eventos especiales no generados por el usuario: 1 por día)
 const MINI_TASKS_PRESETS = [
-    { name: '💧 Tomar 2 vasos de agua', desc: 'Hidrátate de inmediato.', attribute: 'defense', reward_xp: 10, reward_gold: 5 },
-    { name: '🧘 Respirar profundo 1 min', desc: 'Inhala en 4s, sostén 4s y exhala en 4s.', attribute: 'spirit', reward_xp: 10, reward_gold: 5 },
-    { name: '🤸 Estirar brazos y piernas', desc: 'Desentumece los músculos con 1 min de estiramiento.', attribute: 'strength', reward_xp: 10, reward_gold: 5 },
-    { name: '📵 5 min sin celular', desc: 'Aleja la pantalla y enfócate en tu entorno.', attribute: 'discipline', reward_xp: 15, reward_gold: 8 },
-    { name: '📝 Anotar 1 agradecimiento', desc: 'Registra mentalmente o en papel 1 cosa que agradeces hoy.', attribute: 'spirit', reward_xp: 10, reward_gold: 5 },
-    { name: '🧠 Resolver un reto mental', desc: 'Haz una cuenta matemática o piensa en una palabra en otro idioma.', attribute: 'intelligence', reward_xp: 15, reward_gold: 8 },
-    { name: '🚶 Caminata corta (100 pasos)', desc: 'Ponte de pie y camina un momento.', attribute: 'strength', reward_xp: 10, reward_gold: 5 },
-    { name: '🪥 Postura recta 2 minutos', desc: 'Alinea la columna, hombros atrás y barbilla erguida.', attribute: 'discipline', reward_xp: 10, reward_gold: 5 },
-    { name: '🍎 Comer un snack saludable o fruta', desc: 'Elige un alimento fresco y natural.', attribute: 'defense', reward_xp: 10, reward_gold: 5 },
-    { name: '🧹 Ordenar tu escritorio / espacio', desc: 'Recoge 3 objetos fuera de lugar.', attribute: 'discipline', reward_xp: 15, reward_gold: 8 }
+    { name: '💪 Hacer 10 flexiones', desc: 'Realiza 10 flexiones de brazos para mantener la fuerza.', attribute: 'strength', reward_xp: 20, reward_gold: 15 },
+    { name: '📖 Leer +15 minutos', desc: 'Lectura concentrada durante al menos 15 minutos.', attribute: 'intelligence', reward_xp: 25, reward_gold: 20 },
+    { name: '✍️ Estudiar +15 minutos', desc: 'Sesión de estudio o práctica enfocada de 15 minutos.', attribute: 'intelligence', reward_xp: 25, reward_gold: 20 }
 ];
 
-// Generar mini tareas sin temporizador
+// Generar misión especial diaria (1 por día)
 function generateMiniTasks(count = 1, excludeNames = []) {
     const available = MINI_TASKS_PRESETS.filter(p => !excludeNames.includes(p.name));
     const pool = available.length >= count ? available : MINI_TASKS_PRESETS;
