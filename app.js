@@ -1155,6 +1155,17 @@ function drawRadarChart() {
 // 10. RENDERIZACIÓN PESTAÑA: RPG (Portales y Mazmorras)
 // --------------------------------------------------------------------------
 function renderTabRPG() {
+    // Asegurar que la energía tenga un valor válido (fix para saves anteriores)
+    if (userState.energy === undefined || userState.energy === null || userState.energy < 0) {
+        userState.energy = 5;
+    }
+
+    // Actualizar display de energía dinámicamente
+    const energyDisplay = document.getElementById('rpg-energy-display');
+    if (energyDisplay) {
+        energyDisplay.innerText = `⚡ Energía: ${userState.energy} / 5`;
+    }
+
     const container = document.getElementById('portals-list-container');
     container.innerHTML = '';
 
@@ -1183,19 +1194,33 @@ function renderTabRPG() {
 }
 
 function openPortalStartConfirm(portal) {
+    // Garantizar energía válida
+    if (userState.energy === undefined || userState.energy === null) {
+        userState.energy = 5;
+    }
+
     if (userState.energy < 1) {
         alert('❌ No tienes suficiente Energía Semanal (0/5). Se recarga todos los sábados.');
         return;
     }
 
-    if (confirm(`¿Deseas gastar 1 punto de Energía Semanal para entrar a la mazmorra "${portal.name}"?`)) {
+    if (confirm(`¿Deseas gastar 1 punto de Energía Semanal para entrar a la mazmorra "${portal.name}"? (Energía actual: ${userState.energy}/5)`)) {
         sounds.activation();
-        userState.energy--;
-        saveUserProfile();
 
         currentPortalInfo = portal;
         currentPortalStage = 0;
-        launchPortalFight();
+
+        // Consumir energía SOLO después de verificar que el combate puede iniciar
+        try {
+            launchPortalFight();
+            // Si llegamos aquí, el combate inició correctamente → descontar energía
+            userState.energy--;
+            saveUserProfile();
+            renderTabRPG(); // Actualizar display de energía
+        } catch (e) {
+            console.error('Error al iniciar combate, energía NO consumida:', e);
+            alert('⚠️ Ocurrió un error al iniciar el combate. No se consumió energía. Intenta de nuevo.');
+        }
     }
 }
 
