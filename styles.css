@@ -1973,3 +1973,130 @@ input:checked + .slider {
 input:checked + .slider:before {
     transform: translateX(20px);
 }
+
+/* ==========================================================================
+   MINI TAREAS Y RUTINA DIARIA FIJA
+   ========================================================================== */
+
+.mini-tasks-section {
+    background: rgba(124, 58, 237, 0.05);
+    border: 1px dashed rgba(124, 58, 237, 0.3);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 14px;
+}
+
+.mini-tasks-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-title);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-xp);
+    margin-bottom: 8px;
+}
+
+.mini-task-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    transition: all 0.2s;
+}
+
+.mini-task-card.completed {
+    opacity: 0.6;
+    background: rgba(16, 185, 129, 0.08);
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.mini-task-info {
+    flex: 1;
+}
+
+.mini-task-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: #ffffff;
+}
+
+.mini-task-card.completed .mini-task-name {
+    text-decoration: line-through;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.mini-task-desc {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.mini-task-meta {
+    font-size: 11px;
+    color: var(--color-xp);
+    display: flex;
+    gap: 8px;
+    margin-top: 2px;
+}
+
+.mini-task-btn {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    border: none;
+    color: white;
+    font-family: var(--font-title);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.mini-task-btn:active {
+    transform: scale(0.95);
+}
+
+.mini-task-btn.done {
+    background: var(--color-success);
+    cursor: default;
+}
+
+/* Routine Item Row inside Setup Modal */
+.routine-item-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+}
+
+.routine-item-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.routine-item-num {
+    font-family: var(--font-title);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.routine-btn-remove {
+    background: none;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 2px 6px;
+}
+

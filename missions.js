@@ -36,9 +36,73 @@ const MISSION_PRESETS = {
     ]
 };
 
-// Generar misiones diarias iniciales recomendadas según el perfil de calibración
-function generateDailyMissions(mainGoal, level) {
+// Mini Tareas sin temporizador (Eventos especiales y rápidos del Sistema)
+const MINI_TASKS_PRESETS = [
+    { name: '💧 Tomar 2 vasos de agua', desc: 'Hidrátate de inmediato.', attribute: 'defense', reward_xp: 10, reward_gold: 5 },
+    { name: '🧘 Respirar profundo 1 min', desc: 'Inhala en 4s, sostén 4s y exhala en 4s.', attribute: 'spirit', reward_xp: 10, reward_gold: 5 },
+    { name: '🤸 Estirar brazos y piernas', desc: 'Desentumece los músculos con 1 min de estiramiento.', attribute: 'strength', reward_xp: 10, reward_gold: 5 },
+    { name: '📵 5 min sin celular', desc: 'Aleja la pantalla y enfócate en tu entorno.', attribute: 'discipline', reward_xp: 15, reward_gold: 8 },
+    { name: '📝 Anotar 1 agradecimiento', desc: 'Registra mentalmente o en papel 1 cosa que agradeces hoy.', attribute: 'spirit', reward_xp: 10, reward_gold: 5 },
+    { name: '🧠 Resolver un reto mental', desc: 'Haz una cuenta matemática o piensa en una palabra en otro idioma.', attribute: 'intelligence', reward_xp: 15, reward_gold: 8 },
+    { name: '🚶 Caminata corta (100 pasos)', desc: 'Ponte de pie y camina un momento.', attribute: 'strength', reward_xp: 10, reward_gold: 5 },
+    { name: '🪥 Postura recta 2 minutos', desc: 'Alinea la columna, hombros atrás y barbilla erguida.', attribute: 'discipline', reward_xp: 10, reward_gold: 5 },
+    { name: '🍎 Comer un snack saludable o fruta', desc: 'Elige un alimento fresco y natural.', attribute: 'defense', reward_xp: 10, reward_gold: 5 },
+    { name: '🧹 Ordenar tu escritorio / espacio', desc: 'Recoge 3 objetos fuera de lugar.', attribute: 'discipline', reward_xp: 15, reward_gold: 8 }
+];
+
+// Generar mini tareas sin temporizador
+function generateMiniTasks(count = 1, excludeNames = []) {
+    const available = MINI_TASKS_PRESETS.filter(p => !excludeNames.includes(p.name));
+    const pool = available.length >= count ? available : MINI_TASKS_PRESETS;
+    const shuffled = [...pool].sort(() => 0.5 - Math.random());
+    const selected = shuffled.slice(0, count);
+
+    return selected.map(preset => ({
+        name: preset.name,
+        desc: preset.desc,
+        type: 'mini', // mini tarea sin timer
+        difficulty: 'muy_facil',
+        duration: 0, // 0 minutos = sin timer
+        reward_xp: preset.reward_xp,
+        reward_gold: preset.reward_gold,
+        attribute: preset.attribute,
+        completed: false,
+        time_spent: 0,
+        date_created: new Date().toISOString().split('T')[0]
+    }));
+}
+
+// Generar misiones diarias iniciales recomendadas según el perfil de calibración o plantillas de rutina
+function generateDailyMissions(routineTemplatesOrGoal, level = 1) {
     const list = [];
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    // Si se pasan plantillas configuradas por el usuario (Array de templates de rutina)
+    if (Array.isArray(routineTemplatesOrGoal) && routineTemplatesOrGoal.length > 0) {
+        routineTemplatesOrGoal.forEach(t => {
+            const multiplier = 1 + (level - 1) * 0.03;
+            let finalXp = Math.round((t.reward_xp || 30) * multiplier);
+            let finalGold = Math.round((t.reward_gold || 20) * multiplier);
+
+            list.push({
+                name: t.name,
+                desc: t.desc || 'Misión de rutina diaria fija.',
+                type: 'diaria',
+                difficulty: t.difficulty || 'normal',
+                duration: t.duration || 15,
+                reward_xp: finalXp,
+                reward_gold: finalGold,
+                attribute: t.attribute || 'discipline',
+                completed: false,
+                time_spent: 0,
+                date_created: todayStr,
+                templateId: t.id
+            });
+        });
+        return list;
+    }
+
+    const mainGoal = typeof routineTemplatesOrGoal === 'string' ? routineTemplatesOrGoal : 'fisico';
     const attributes = ['strength', 'intelligence', 'discipline', 'spirit', 'defense'];
     
     // Prioridad según el objetivo principal del usuario
@@ -86,7 +150,7 @@ function createMissionInstance(preset, attribute, type = 'diaria', level = 1) {
     return {
         name: preset.name,
         desc: preset.desc,
-        type: type, // 'diaria', 'semanal', 'especial', 'personalizada'
+        type: type, // 'diaria', 'semanal', 'especial', 'personalizada', 'mini'
         difficulty: preset.difficulty, // 'muy_facil', 'facil', 'normal', 'dificil', 'extrema'
         duration: finalDuration, // minutos
         reward_xp: finalXp,
@@ -200,6 +264,8 @@ function checkRecoveryMode(lastLoginDate) {
 }
 
 window.MISSION_PRESETS = MISSION_PRESETS;
+window.MINI_TASKS_PRESETS = MINI_TASKS_PRESETS;
+window.generateMiniTasks = generateMiniTasks;
 window.generateDailyMissions = generateDailyMissions;
 window.createMissionInstance = createMissionInstance;
 window.startFocusTimer = startFocusTimer;

@@ -282,6 +282,38 @@ function setupEventListeners() {
         sounds.click();
         openCreateMissionModal();
     });
+
+    // Configuración de Rutina Diaria Fija
+    const btnRoutine = document.getElementById('btn-open-routine-config');
+    if (btnRoutine) {
+        btnRoutine.addEventListener('click', () => {
+            sounds.click();
+            openRoutineSetupModal(false);
+        });
+    }
+
+    const btnCloseRoutine = document.getElementById('btn-close-routine-setup');
+    if (btnCloseRoutine) {
+        btnCloseRoutine.addEventListener('click', () => {
+            sounds.click();
+            closeModal('routine-setup-modal');
+        });
+    }
+
+    const btnAddRoutine = document.getElementById('btn-add-routine-item');
+    if (btnAddRoutine) {
+        btnAddRoutine.addEventListener('click', () => {
+            sounds.click();
+            addRoutineItemCard({}, document.getElementById('routine-items-list').children.length + 1);
+        });
+    }
+
+    const btnSaveRoutine = document.getElementById('btn-save-routine');
+    if (btnSaveRoutine) {
+        btnSaveRoutine.addEventListener('click', () => {
+            saveRoutineSetup();
+        });
+    }
 }
 
 // --------------------------------------------------------------------------
@@ -346,12 +378,6 @@ function initCalibrationForm() {
         
         // Guardar en la base de datos
         await saveUserProfile();
-        
-        // Crear las primeras misiones diarias
-        const initialMissions = window.generateDailyMissions(tempCalibrationData.goal, 1);
-        for (const mission of initialMissions) {
-            await window.dbMissions.save(mission);
-        }
 
         // Desbloquear primer logro
         await unlockAchievement('primer_paso');
@@ -359,10 +385,8 @@ function initCalibrationForm() {
         // Inicializar títulos
         await unlockTitle('principiante');
 
-        showScreen('screen-home');
-        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-        document.querySelector('.nav-item[data-tab="home"]').classList.add('active');
-        renderTabHome();
+        // Abrir configuración de rutina fija obligatoria (mínimo 4 tareas)
+        openRoutineSetupModal(true);
     });
 }
 
@@ -431,7 +455,9 @@ async function renderTabHome() {
     document.getElementById('home-xp-bar').style.width = `${xpPercent}%`;
     document.getElementById('lbl-home-xp').innerText = `${userState.xp} / ${nextLvlXp} XP`;
 
-    // Cargar misiones diarias resumidas
+    // Cargar mini tareas y misiones diarias resumidas en Home
+    await renderMiniTasks('home-mini-tasks-container', true);
+
     const mList = await window.dbMissions.getAll();
     const todayStr = new Date().toISOString().split('T')[0];
     const dailyMissions = mList.filter(m => m.type === 'diaria' && m.date_created === todayStr);
@@ -440,7 +466,7 @@ async function renderTabHome() {
     mContainer.innerHTML = '';
 
     if (dailyMissions.length === 0) {
-        mContainer.innerHTML = `<div style="text-align:center; padding:10px; color:rgba(255,255,255,0.4);">No hay misiones recomendadas para hoy. Crea una misión en la pestaña Misiones.</div>`;
+        mContainer.innerHTML = `<div style="text-align:center; padding:10px; color:rgba(255,255,255,0.4);">No hay tareas de rutina registradas para hoy. Configura tu rutina en Misiones.</div>`;
     } else {
         dailyMissions.forEach(m => {
             const item = document.createElement('div');
@@ -534,6 +560,13 @@ async function loadMissionsList() {
     const listContainer = document.getElementById('missions-list-container');
     listContainer.innerHTML = '';
 
+    const miniContainer = document.getElementById('mini-tasks-container');
+    if (activeMissionsTab === 'hoy') {
+        await renderMiniTasks('mini-tasks-container', false);
+    } else if (miniContainer) {
+        miniContainer.innerHTML = '';
+    }
+
     const allMissions = await window.dbMissions.getAll();
     const todayStr = new Date().toISOString().split('T')[0];
     
@@ -549,7 +582,7 @@ async function loadMissionsList() {
     }
 
     if (filtered.length === 0) {
-        listContainer.innerHTML = `<div style="text-align:center; padding:30px; color:rgba(255,255,255,0.4);">No hay misiones registradas en esta sección. ¡Crea una nueva misión con el botón +!</div>`;
+        listContainer.innerHTML = `<div style="text-align:center; padding:30px; color:rgba(255,255,255,0.4);">No hay misiones registradas en esta sección. ¡Usa el botón 'Configurar Rutina' o el botón '+'!</div>`;
         return;
     }
 
@@ -575,6 +608,328 @@ async function loadMissionsList() {
         `;
         listContainer.appendChild(card);
     });
+}
+
+// --------------------------------------------------------------------------
+// 7.1 GESTIÓN DE MINI TAREAS (Sin Timer)
+// --------------------------------------------------------------------------
+async function renderMiniTasks(containerId, isHome = false) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+
+    const allMissions = await window.dbMissions.getAll();
+    const todayStr = new Date().toISOString().split('T')[0];
+    let miniTasks = allMissions.filter(m => m.type === 'mini' && m.date_created === todayStr);
+
+    // Si aún no hay mini tareas generadas para hoy, crear 1 inicial
+    if (miniTasks.length === 0) {
+        const initialMini = window.generateMiniTasks(1);
+        for (const mt of initialMini) {
+            const savedId = await window.dbMissions.save(mt);
+            mt.id = savedId;
+            miniTasks.push(mt);
+        }
+    }
+
+    const section = document.createElement('div');
+    section.className = 'mini-tasks-section';
+    section.innerHTML = `
+        <div class="mini-tasks-header">
+            <span>⚡ Eventos Especiales / Mini Tareas</span>
+            <span style="font-size:11px; font-weight:normal; color:rgba(255,255,255,0.4);">Sin timer</span>
+        </div>
+        <div class="mini-tasks-list"></div>
+    `;
+
+    const listEl = section.querySelector('.mini-tasks-list');
+
+    miniTasks.forEach(task => {
+        const card = document.createElement('div');
+        card.className = `mini-task-card ${task.completed ? 'completed' : ''}`;
+        card.innerHTML = `
+            <div class="mini-task-info">
+                <div class="mini-task-name">${task.name}</div>
+                <div class="mini-task-desc">${task.desc}</div>
+                <div class="mini-task-meta">
+                    <span>🔋 +${task.reward_xp} XP</span>
+                    <span>🟡 +${task.reward_gold} Oro</span>
+                    <span>📈 +1 ${task.attribute.toUpperCase()}</span>
+                </div>
+            </div>
+            <div>
+                <button class="mini-task-btn ${task.completed ? 'done' : ''}" ${task.completed ? 'disabled' : ''}>
+                    ${task.completed ? '✓ Hecho' : 'Completar'}
+                </button>
+            </div>
+        `;
+
+        if (!task.completed) {
+            const btn = card.querySelector('.mini-task-btn');
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                sounds.missionComplete();
+                task.completed = true;
+                await window.dbMissions.save(task);
+
+                // Recompensas
+                userState.xp += task.reward_xp;
+                userState.gold += task.reward_gold;
+
+                // Atributo +1
+                const attr = task.attribute || 'defense';
+                userState.stats[attr].current += 1;
+                userState.stats[attr].base += 1;
+
+                await window.dbHistory.add({
+                    date: todayStr,
+                    text: `+1 ${attr.charAt(0).toUpperCase() + attr.slice(1)} (Mini Tarea)`,
+                    attribute: attr,
+                    value: 1,
+                    timestamp: Date.now()
+                });
+
+                // Calendario
+                await saveCalendarEntry(task.reward_xp, 0, attr, 1);
+
+                // Nivel
+                let levelUpOccurred = false;
+                while (userState.xp >= window.getXPForLevel(userState.level)) {
+                    userState.xp -= window.getXPForLevel(userState.level);
+                    userState.level++;
+                    levelUpOccurred = true;
+                }
+
+                if (levelUpOccurred) {
+                    setTimeout(() => {
+                        sounds.levelUp();
+                        alert(`⚡ ¡ENHORABUENA! Has subido al nivel ${userState.level}.`);
+                    }, 500);
+                }
+
+                await saveUserProfile();
+                loadMissionsList();
+                renderTabHome();
+                await checkBonusMiniTasksUnlock();
+            });
+        }
+
+        listEl.appendChild(card);
+    });
+
+    container.appendChild(section);
+}
+
+async function checkBonusMiniTasksUnlock() {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const allMissions = await window.dbMissions.getAll();
+    const todayDaily = allMissions.filter(m => m.type === 'diaria' && m.date_created === todayStr);
+
+    if (todayDaily.length >= 4 && todayDaily.every(m => m.completed)) {
+        // Verificar si ya se dieron los bonus de hoy
+        const todayMini = allMissions.filter(m => m.type === 'mini' && m.date_created === todayStr);
+        if (todayMini.length < 3) {
+            const existingNames = todayMini.map(m => m.name);
+            const bonusTasks = window.generateMiniTasks(2, existingNames);
+            for (const bt of bonusTasks) {
+                await window.dbMissions.save(bt);
+            }
+            sounds.activation();
+            alert('🎉 ¡EXTRAORDINARIO! Has completado todas las misiones de tu rutina diaria. El Sistema ha desbloqueado 2 Mini Tareas Especiales bonus.');
+            loadMissionsList();
+            renderTabHome();
+        }
+    }
+}
+
+// --------------------------------------------------------------------------
+// 7.2 CONFIGURACIÓN DE RUTINA DIARIA FIJA
+// --------------------------------------------------------------------------
+let routineModalIsFirstTime = false;
+
+async function openRoutineSetupModal(isFirstTime = false) {
+    routineModalIsFirstTime = isFirstTime;
+    const overlay = document.getElementById('routine-setup-modal');
+    overlay.classList.add('active');
+
+    const closeBtn = document.getElementById('btn-close-routine-setup');
+    if (isFirstTime) {
+        closeBtn.style.display = 'none';
+    } else {
+        closeBtn.style.display = 'block';
+    }
+
+    const listContainer = document.getElementById('routine-items-list');
+    listContainer.innerHTML = '';
+    document.getElementById('routine-validation-msg').style.display = 'none';
+
+    let templates = await window.dbRoutineTemplates.getAll();
+
+    if (templates.length === 0) {
+        templates = [
+            { name: 'Flexiones / Ejercicio', desc: 'Rutina de fuerza física.', duration: 15, attribute: 'strength', difficulty: 'normal', reward_xp: 60, reward_gold: 45 },
+            { name: 'Lectura / Estudio', desc: 'Lectura o práctica de programación/estudio.', duration: 30, attribute: 'intelligence', difficulty: 'normal', reward_xp: 60, reward_gold: 45 },
+            { name: 'Ordenar habitación / Cero celular', desc: 'Mantener orden y foco.', duration: 15, attribute: 'discipline', difficulty: 'facil', reward_xp: 30, reward_gold: 20 },
+            { name: 'Meditación / Respiración', desc: 'Pausa consciente y meditación.', duration: 15, attribute: 'spirit', difficulty: 'facil', reward_xp: 30, reward_gold: 20 }
+        ];
+    }
+
+    templates.forEach((tpl, idx) => {
+        addRoutineItemCard(tpl, idx + 1);
+    });
+}
+
+function addRoutineItemCard(tpl = {}, index = 1) {
+    const listContainer = document.getElementById('routine-items-list');
+    const card = document.createElement('div');
+    card.className = 'routine-item-card';
+
+    const defaultName = tpl.name || '';
+    const defaultDesc = tpl.desc || '';
+    const defaultDuration = tpl.duration || 15;
+    const defaultAttr = tpl.attribute || 'strength';
+    const defaultDiff = tpl.difficulty || 'normal';
+
+    card.innerHTML = `
+        <div class="routine-item-card-header">
+            <span class="routine-item-num">Tarea #${listContainer.children.length + 1}</span>
+            <button type="button" class="routine-btn-remove" title="Eliminar tarea">✖</button>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:6px;">
+            <input class="input-text routine-input-name" style="font-size:14px; padding:8px 12px;" type="text" placeholder="Nombre (ej: Flexiones, Leer...)" value="${defaultName}">
+            <input class="input-text routine-input-desc" style="font-size:12px; padding:6px 10px;" type="text" placeholder="Descripción corta" value="${defaultDesc}">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:6px;">
+                <select class="input-text routine-select-dur" style="background:#091024; font-size:11px; padding:6px 4px;">
+                    <option value="5" ${defaultDuration == 5 ? 'selected' : ''}>5 Min</option>
+                    <option value="10" ${defaultDuration == 10 ? 'selected' : ''}>10 Min</option>
+                    <option value="15" ${defaultDuration == 15 ? 'selected' : ''}>15 Min</option>
+                    <option value="20" ${defaultDuration == 20 ? 'selected' : ''}>20 Min</option>
+                    <option value="30" ${defaultDuration == 30 ? 'selected' : ''}>30 Min</option>
+                    <option value="45" ${defaultDuration == 45 ? 'selected' : ''}>45 Min</option>
+                    <option value="60" ${defaultDuration == 60 ? 'selected' : ''}>60 Min</option>
+                </select>
+                <select class="input-text routine-select-attr" style="background:#091024; font-size:11px; padding:6px 4px;">
+                    <option value="strength" ${defaultAttr === 'strength' ? 'selected' : ''}>💪 Fuerza</option>
+                    <option value="intelligence" ${defaultAttr === 'intelligence' ? 'selected' : ''}>🧠 Intel.</option>
+                    <option value="discipline" ${defaultAttr === 'discipline' ? 'selected' : ''}>⏱️ Disc.</option>
+                    <option value="spirit" ${defaultAttr === 'spirit' ? 'selected' : ''}>🧘 Espíritu</option>
+                    <option value="defense" ${defaultAttr === 'defense' ? 'selected' : ''}>🛡️ Defensa</option>
+                </select>
+                <select class="input-text routine-select-diff" style="background:#091024; font-size:11px; padding:6px 4px;">
+                    <option value="muy_facil" ${defaultDiff === 'muy_facil' ? 'selected' : ''}>Muy Fácil</option>
+                    <option value="facil" ${defaultDiff === 'facil' ? 'selected' : ''}>Fácil</option>
+                    <option value="normal" ${defaultDiff === 'normal' ? 'selected' : ''}>Normal</option>
+                    <option value="dificil" ${defaultDiff === 'dificil' ? 'selected' : ''}>Difícil</option>
+                    <option value="extrema" ${defaultDiff === 'extrema' ? 'selected' : ''}>Extrema</option>
+                </select>
+            </div>
+        </div>
+    `;
+
+    card.querySelector('.routine-btn-remove').addEventListener('click', () => {
+        sounds.click();
+        const currentCount = listContainer.children.length;
+        if (currentCount <= 4) {
+            alert('⚠️ La rutina diaria requiere como mínimo 4 tareas.');
+            return;
+        }
+        card.remove();
+        Array.from(listContainer.children).forEach((c, idx) => {
+            c.querySelector('.routine-item-num').innerText = `Tarea #${idx + 1}`;
+        });
+    });
+
+    listContainer.appendChild(card);
+}
+
+async function saveRoutineSetup() {
+    const listContainer = document.getElementById('routine-items-list');
+    const cards = Array.from(listContainer.children);
+    const msgEl = document.getElementById('routine-validation-msg');
+    msgEl.style.display = 'none';
+
+    if (cards.length < 4) {
+        msgEl.innerText = '⚠️ Debes configurar al menos 4 tareas para tu rutina diaria.';
+        msgEl.style.display = 'block';
+        return;
+    }
+
+    const items = [];
+    const attributesSet = new Set();
+
+    for (let i = 0; i < cards.length; i++) {
+        const card = cards[i];
+        const name = card.querySelector('.routine-input-name').value.trim();
+        const desc = card.querySelector('.routine-input-desc').value.trim();
+        const duration = parseInt(card.querySelector('.routine-select-dur').value) || 15;
+        const attribute = card.querySelector('.routine-select-attr').value;
+        const difficulty = card.querySelector('.routine-select-diff').value;
+
+        if (!name) {
+            msgEl.innerText = `⚠️ La tarea #${i + 1} no tiene nombre. Completa todos los nombres.`;
+            msgEl.style.display = 'block';
+            return;
+        }
+
+        attributesSet.add(attribute);
+
+        let baseXP = 30;
+        let baseGold = 20;
+        if (difficulty === 'muy_facil') { baseXP = 15; baseGold = 10; }
+        else if (difficulty === 'facil') { baseXP = 30; baseGold = 20; }
+        else if (difficulty === 'normal') { baseXP = 60; baseGold = 45; }
+        else if (difficulty === 'dificil') { baseXP = 100; baseGold = 80; }
+        else if (difficulty === 'extrema') { baseXP = 160; baseGold = 130; }
+
+        items.push({
+            name,
+            desc: desc || `Tarea diaria de ${attribute}`,
+            duration,
+            attribute,
+            difficulty,
+            reward_xp: baseXP,
+            reward_gold: baseGold
+        });
+    }
+
+    if (attributesSet.size < 2) {
+        msgEl.innerText = '⚠️ Tu rutina debe incluir al menos 2 atributos diferentes (ej: Fuerza y Disciplina).';
+        msgEl.style.display = 'block';
+        return;
+    }
+
+    // Guardar en la base de datos
+    sounds.activation();
+    await window.dbRoutineTemplates.clear();
+    await window.dbRoutineTemplates.saveAll(items);
+
+    // Regenerar las misiones diarias de hoy basadas en la nueva rutina
+    const todayStr = new Date().toISOString().split('T')[0];
+    const allMissions = await window.dbMissions.getAll();
+    for (const m of allMissions) {
+        if (m.type === 'diaria' && m.date_created === todayStr && !m.completed) {
+            await window.dbMissions.delete(m.id);
+        }
+    }
+
+    const newMissions = window.generateDailyMissions(items, userState.level);
+    for (const m of newMissions) {
+        await window.dbMissions.save(m);
+    }
+
+    closeModal('routine-setup-modal');
+
+    if (routineModalIsFirstTime) {
+        showScreen('screen-home');
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        document.querySelector('.nav-item[data-tab="home"]').classList.add('active');
+        renderTabHome();
+        alert('⚔️ ¡RUTINA DIARIA ESTABLECIDA! Tus 4 tareas diarias han sido creadas.');
+    } else {
+        loadMissionsList();
+        renderTabHome();
+        alert('✅ Rutina diaria fija actualizada exitosamente.');
+    }
 }
 
 // Detalles de Misión Modal
@@ -762,6 +1117,8 @@ function launchFocusTimer(mission) {
 
             await saveUserProfile();
             renderTabMissions();
+            renderTabHome();
+            await checkBonusMiniTasksUnlock();
         },
         // Si cancela
         () => {
@@ -1874,13 +2231,19 @@ async function checkAndApplyDailyReset() {
             userState.daysActive++;
         }
 
-        // Generar las nuevas misiones del día recomendadas
-        const primaryGoal = tempCalibrationData.goal || 'fisico';
-        const newMissions = window.generateDailyMissions(primaryGoal, userState.level);
+        // Obtener la rutina diaria fija configurada por el usuario
+        const routineTemplates = await window.dbRoutineTemplates.getAll();
+        const newMissions = window.generateDailyMissions(routineTemplates.length > 0 ? routineTemplates : (tempCalibrationData.goal || 'fisico'), userState.level);
         
-        // Guardar misiones
+        // Guardar misiones diarias
         for (const mission of newMissions) {
             await window.dbMissions.save(mission);
+        }
+
+        // Generar 1 mini tarea inicial del día
+        const initialMini = window.generateMiniTasks(1);
+        for (const mt of initialMini) {
+            await window.dbMissions.save(mt);
         }
 
         // Actualizar último inicio
@@ -1913,5 +2276,6 @@ window.renderTabInventory = renderTabInventory;
 window.renderTabProfile = renderTabProfile;
 window.renderTabProfileStats = renderTabProfileStats;
 window.renderTabShop = renderTabShop;
+window.openRoutineSetupModal = openRoutineSetupModal;
 window.sounds = sounds;
 console.log('App manager (app.js) cargado correctamente.');

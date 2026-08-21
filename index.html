@@ -192,6 +192,7 @@
                 <div class="section-title">
                     <i>📅</i> Misiones del Día
                 </div>
+                <div id="home-mini-tasks-container"></div>
                 <div class="home-missions-list" id="home-missions-list">
                     <!-- Rellenado dinámicamente -->
                 </div>
@@ -244,6 +245,14 @@
                     <button class="tab-btn" data-tab="especiales">Especiales</button>
                     <button class="tab-btn" data-tab="personalizadas">Creadas</button>
                 </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <div style="font-size:12px; color:rgba(255,255,255,0.6);">⚔️ Rutina Diaria Fija</div>
+                    <button class="btn-secondary" id="btn-open-routine-config" style="padding:5px 12px; font-size:11px; border-color:var(--color-primary);">⚙️ Configurar Rutina (Mín. 4)</button>
+                </div>
+
+                <!-- Mini Tareas Especiales (Sin Timer) -->
+                <div id="mini-tasks-container"></div>
 
                 <div id="missions-list-container">
                     <!-- Dinámico -->
@@ -762,6 +771,29 @@
                 <div class="select-card-grid" id="class-list-container">
                     <!-- Dinámico -->
                 </div>
+            </div>
+        </div>
+
+        <!-- Modal 7: Configuración de Rutina Diaria Fija (Mínimo 4 tareas) -->
+        <div class="modal-overlay" id="routine-setup-modal">
+            <div class="modal-content" style="max-height:85vh; overflow-y:auto; max-width:480px;">
+                <div class="modal-header">
+                    <div class="modal-title">⚔️ Rutina Diaria Fija</div>
+                    <button class="modal-close" id="btn-close-routine-setup">×</button>
+                </div>
+                <p style="font-size:13px; color:rgba(255,255,255,0.6); margin-bottom:12px;">
+                    Configura las tareas que realizarás todos los días (mínimo 4 de al menos 2 atributos distintos). El Sistema las renovará automáticamente cada día.
+                </p>
+                
+                <div id="routine-items-list" style="display:flex; flex-direction:column; gap:12px; margin-bottom:15px;">
+                    <!-- Items de rutina dinámicos -->
+                </div>
+
+                <button class="btn-secondary" id="btn-add-routine-item" style="width:100%; margin-bottom:15px; border-style:dashed;">+ Agregar Otra Tarea</button>
+
+                <div id="routine-validation-msg" style="font-size:12px; color:#ef4444; margin-bottom:12px; display:none;"></div>
+
+                <button class="btn-massive" id="btn-save-routine">💾 Guardar Rutina Diaria</button>
             </div>
         </div>
     </div>

@@ -1,6 +1,6 @@
 // db.js - Gestión de Base de Datos Local con IndexedDB para LEVEL UP
 const DB_NAME = 'LevelUpDB';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 let dbPromise = null;
 
@@ -41,6 +41,11 @@ function initDB() {
             // Almacén para logros
             if (!db.objectStoreNames.contains('achievements')) {
                 db.createObjectStore('achievements', { keyPath: 'id' });
+            }
+
+            // Almacén para plantillas de rutina fija diaria del usuario
+            if (!db.objectStoreNames.contains('routine_templates')) {
+                db.createObjectStore('routine_templates', { keyPath: 'id', autoIncrement: true });
             }
         };
 
@@ -282,6 +287,58 @@ const dbAchievements = {
     }
 };
 
+// Operaciones para PLANTILLAS DE RUTINA DIARIA
+const dbRoutineTemplates = {
+    async getAll() {
+        const store = await getStore('routine_templates');
+        return new Promise((resolve) => {
+            const request = store.getAll();
+            request.onsuccess = () => resolve(request.result || []);
+            request.onerror = () => resolve([]);
+        });
+    },
+
+    async save(template) {
+        const store = await getStore('routine_templates', 'readwrite');
+        return new Promise((resolve, reject) => {
+            const request = store.put(template);
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    },
+
+    async saveAll(templatesList) {
+        const db = await initDB();
+        const transaction = db.transaction('routine_templates', 'readwrite');
+        const store = transaction.objectStore('routine_templates');
+        return new Promise((resolve, reject) => {
+            templatesList.forEach(t => {
+                store.put(t);
+            });
+            transaction.oncomplete = () => resolve(true);
+            transaction.onerror = () => reject(transaction.error);
+        });
+    },
+
+    async delete(id) {
+        const store = await getStore('routine_templates', 'readwrite');
+        return new Promise((resolve, reject) => {
+            const request = store.delete(id);
+            request.onsuccess = () => resolve(true);
+            request.onerror = () => reject(request.error);
+        });
+    },
+
+    async clear() {
+        const store = await getStore('routine_templates', 'readwrite');
+        return new Promise((resolve, reject) => {
+            const request = store.clear();
+            request.onsuccess = () => resolve(true);
+            request.onerror = () => reject(request.error);
+        });
+    }
+};
+
 // Exportar base de datos
 window.dbSettings = dbSettings;
 window.dbMissions = dbMissions;
@@ -289,5 +346,6 @@ window.dbInventory = dbInventory;
 window.dbHistory = dbHistory;
 window.dbCalendar = dbCalendar;
 window.dbAchievements = dbAchievements;
+window.dbRoutineTemplates = dbRoutineTemplates;
 window.initDB = initDB;
 console.log('Database helper (db.js) cargado correctamente.');
